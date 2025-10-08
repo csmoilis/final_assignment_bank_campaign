@@ -8,6 +8,24 @@ import datetime
 
 st.title("📞 Callcenter Dashboard")
 
+with st.expander("ℹ️ - About this dashboard", expanded=False):
+    st.markdown(
+        """
+        This dashboard simulates a call center environment where agents can manage a queue of customers to upsell a long term deposit bank product.
+        In the original paper that came with the dataset, there was inbound calls also, but it's not present in the dataset.
+        The dashboard fetches customer data from an API(NocoDB with test and synthetic data), displays customer information, and uses a machine learning model to predict the likelihood of a successful upsell.
+        
+        **How to use the dashboard:**
+        1. Set the queue size and upsell bonus in the sidebar. The bonus is simply a multiplier for the potential earnings from successful upsells.
+        2. View the current queue of customers and their details.
+        3. For each customer, see the model's predicted probability of subscription.
+        4. After each call, indicate whether the upsell was successful and submit the result.
+        5. Track your total bonus based on successful upsells.
+
+        **TIP** see what happens when the queue is empty 😉
+        """
+    )
+
 # --- Sidebar: Set queue size and bonus, and show model probability ---
 with st.sidebar:
     st.header("Queue Settings")
@@ -19,13 +37,15 @@ with st.sidebar:
     # Placeholder for model probability
     model_prob_placeholder = st.empty()
 
+
+
 # --- Cached data fetch ---
 @st.cache_data(show_spinner=False)
 def fetch_customers(limit):
-    API_DATA_URL = "https://dun3co-sdc-nocodb.hf.space/api/v2/tables/mcd82d8113u6fyg/records"
+    API_DATA_URL = "https://dun3co-sdc-nocodb.hf.space/api/v2/tables/m48wdcf0k3nw7e8/records"
     API_DATA_TOKEN = st.secrets["NOCODB_TOKEN"]
     HEADERS = {"xc-token": API_DATA_TOKEN}
-    params = {"offset": 0, "limit": limit, "viewId": "vwn6mdbep0b0snwx"}
+    params = {"offset": 0, "limit": limit, "viewId": "vw7271c369eewzjf"}
     res = requests.get(API_DATA_URL, headers=HEADERS, params=params)
     res.raise_for_status()
     return res.json()["list"]
