@@ -23,6 +23,7 @@ class InputData(BaseModel):
     loan: Literal["yes", "no", "unknown"]
     months_since_previous_contact: str
     n_previous_contacts: str
+    poutcome: str
     had_contact: bool
     is_single: bool
     uknown_contact: bool
@@ -36,11 +37,14 @@ def health():
 
 @app.post("/predict")
 def predict(batch: BatchInputData):
-    # Convert input to DataFrame for pipeline
-    X = pd.DataFrame([item.dict() for item in batch.data])
-    preds = model.predict(X)
-    probs = model.predict_proba(X)[:, 1]
-    return {
-        "predictions": preds.tolist(),
-        "probabilities": probs.tolist()
-    }
+    try:
+        X = pd.DataFrame([item.dict() for item in batch.data])
+        preds = model.predict(X)
+        probs = model.predict_proba(X)[:, 1]
+        return {
+            "predictions": preds.tolist(),
+            "probabilities": probs.tolist()
+        }
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "trace": traceback.format_exc()}
