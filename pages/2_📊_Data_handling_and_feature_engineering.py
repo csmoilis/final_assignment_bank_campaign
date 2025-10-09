@@ -60,7 +60,7 @@ with container1:
     | `month`    | Last contact month of the year (categorical). Values: `jan`, `feb`, `mar`, etc.                                            |
     | `duration` | Last contact duration, in seconds (numeric).                                                                               |
 
-    ### Campaing Attributes
+    ### Campaign Attributes
 
     | Column     | Description                                                                                                                           |
     | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -80,6 +80,18 @@ with container2:
                     
         We did some feature engineering to make the data more suitable for modeling.
         as mentioned earlier, we created a datetime variable from the day, month and year (inferred from the order of the data).
+        
+        We also refined and added several new features to help the model better understand customer behavior and campaign performance.  
+        For instance:  
+        - We **binned `pdays`** into intervals like “No contact” or “0–5 months” to capture how long it’s been since a customer was last reached.  
+        - We **grouped previous contacts** (`n_previous_contacts`) to see how persistence impacts outcomes: too many calls might lower interest!  
+        - We added **simple True/False flags** like `had_contact` and `is_single` to make the model pick up behavioral patterns more easily.  
+        - We created an **“unknown contact” indicator** to handle cases where the contact type wasn’t recorded, improving data consistency.  
+        - We converted months into numbers (`month_num`) and inferred a **campaign year** so time-based patterns become clearer.  
+        - We combined these into a full **datetime column (`date`)** and a **`year_month`** feature for easy trend analysis.  
+        - Finally, we **capped extreme values** in `balance` and `campaign` to prevent outliers from distorting the model.  
+
+        Together, these transformations made the dataset cleaner, more interpretable, and better aligned with real-world marketing insights.
         
         """)
 
