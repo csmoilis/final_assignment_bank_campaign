@@ -12,7 +12,7 @@ with st.expander("ℹ️ - About this dashboard", expanded=False):
     st.markdown(
         """
         This dashboard simulates a call center environment where agents can manage a queue of customers to upsell a long term deposit bank product.
-        In the original paper that came with the dataset, there was inbound calls also, but it's not present in the dataset.
+        In the original paper that came with the dataset, they mention that there was inbound calls too, but it's not present in the dataset.
         The dashboard fetches customer data from an API(NocoDB with test and synthetic data), displays customer information, and uses a machine learning model to predict the likelihood of a successful upsell.
         
         **How to use the dashboard:**
@@ -30,7 +30,7 @@ with st.expander("ℹ️ - About this dashboard", expanded=False):
 with st.sidebar:
     st.header("Queue Settings")
     queue_size = st.number_input("Queue size", min_value=1, max_value=50, value=10, step=1)
-    bonus = st.number_input("Upsell Bonus (currency/unit)", min_value=0.0, value=10.0, step=1.0)
+    bonus = st.number_input("Upsell Bonus (currency/unit)", min_value=1.0, value=10.0, step=1.0)
     if st.button("Reset Queue"):
         st.session_state.queue = None  # Force re-fetch
         st.session_state.total_bonus = 0.0
@@ -42,10 +42,10 @@ with st.sidebar:
 # --- Cached data fetch ---
 @st.cache_data(show_spinner=False)
 def fetch_customers(limit):
-    API_DATA_URL = "https://dun3co-sdc-nocodb.hf.space/api/v2/tables/m48wdcf0k3nw7e8/records"
+    API_DATA_URL = "https://dun3co-sdc-nocodb.hf.space/api/v2/tables/m39a8axnn3980w9/records"
     API_DATA_TOKEN = st.secrets["NOCODB_TOKEN"]
     HEADERS = {"xc-token": API_DATA_TOKEN}
-    params = {"offset": 0, "limit": limit, "viewId": "vw7271c369eewzjf"}
+    params = {"offset": 0, "limit": limit, "viewId": "vwjuv5jnaet9npuu"}
     res = requests.get(API_DATA_URL, headers=HEADERS, params=params)
     res.raise_for_status()
     return res.json()["list"]
@@ -152,8 +152,8 @@ if st.session_state.queue:
 
     # --- Customer info as tiles ---
     st.write("### Customer Information")
-    keys = list(active_row.keys())
-    values = list(active_row.values())
+    keys = [k for k in active_row.keys() if k != "y"] #Dropping the target variable "y"
+    values = [active_row[k] for k in keys] #Dropping the target variable "y"
     n_cols = 4
     cols = st.columns(n_cols)
     for i, key in enumerate(keys):
